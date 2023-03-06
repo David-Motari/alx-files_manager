@@ -1,15 +1,17 @@
 import redis from 'redis';
-import { promisify } from 'utils'
+import { promisify } from 'util';
 
 class RedisClient {
   constructor() {
     this.client = redis.createClient();
     this.clientGet = promisify(this.client.get).bind(this.client);
+
     this.client.on('error', (error) => {
       console.log(`Redis client not connected to the server: ${error}`);
     });
   }
-  is_alive() {
+
+  isAlive() {
     // returns true when the connection to Redis is a success otherwise, false
     return this.client.connected;
   }
@@ -21,7 +23,8 @@ class RedisClient {
   }
 
   async set(key, value, duration) {
-    // takes a string key, a value and a duration in second as arguments to store it in Redis (with an expiration set by the duration argument)
+    // takes a string key, a value and a duration in second as arguments
+    // to store it in Redis (with an expiration set by the duration argument)
     this.client.set(key, value);
     this.client.expire(key, duration);
   }
@@ -31,3 +34,6 @@ class RedisClient {
     this.client.del(key);
   }
 }
+
+const redisClient = new RedisClient();
+export default redisClient;
